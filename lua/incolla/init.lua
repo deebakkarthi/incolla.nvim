@@ -72,10 +72,9 @@ M.incolla = function()
                         vim.fn.fnamemodify(clip.Path, ":t"):gsub("%s", "") or
                         configured_name .. clip.Ext
 
-    -- Compute destination path
-    -- NOTE: It's always relative to *the file open in the current buffer*
+    -- Give the absolute path to place the image
     local imgdir = ftconfig.img_dir
-    local dst_path = string.format("%s/%s/%s", vim.fn.expand('%:p:h'), imgdir, file_name)
+    local dst_path = string.format("%s/%s", imgdir, file_name)
 
     if fsutils.file_exists(dst_path) then
         notify("File already exists at destination path", level.WARN)
@@ -96,8 +95,9 @@ M.incolla = function()
         assert(uv.fs_copyfile(clip.Path, dst_path))
     end
 
-    -- Add text at current position using relative path
-    local rel_path = string.format("./%s/%s", imgdir, file_name)
+    -- Paste the path prepended with "/" as link
+    -- Useful only for hugo
+    local rel_path = string.format("/%s", file_name)
     local text = string.format(ftconfig.affix, rel_path)
     write_text(text)
 end
